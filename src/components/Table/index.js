@@ -8,6 +8,9 @@ function reducer(state, action) {
   switch (action.type) {
     case "init":
       return action.payload;
+    case "delete":
+      return state.filter((_, index) => index !== action.payload - 1);
+
     default:
       console.error("Unmatched case!");
   }
@@ -24,9 +27,10 @@ const Table = () => {
   }, []);
 
   function handleClick(event) {
-    console.log(event.target);
-
-    // TODO: 'dispatch({type: "delete", payload: ???})
+    dispatch({
+      type: "delete",
+      payload: event.target.closest("tr").dataset.id,
+    });
   }
 
   return (
@@ -39,8 +43,14 @@ const Table = () => {
         </tr>
       </thead>
       <tbody>
-        {workers.map(({ id, name, job }) => (
-          <Row id={id} name={name} job={job} key={id} />
+        {workers.map(({ name, job }, index) => (
+          <Row
+            id={index + 1}
+            name={name}
+            job={job}
+            key={index}
+            handler={handleClick}
+          />
         ))}
       </tbody>
     </table>
