@@ -1,30 +1,39 @@
 import api from "api";
+import PropTypes from "prop-types";
 import { useEffect, useReducer } from "react";
 import Row from "./Row";
 
 console.log(Row);
 
-function reducer(state, action) {
-  switch (action.type) {
+function reducer(state, { type, payload }) {
+  switch (type) {
     case "init":
-      return action.payload;
+      return payload;
+    case "create":
+      return state.concat(payload);
     case "delete":
-      return state.filter((_, index) => index !== action.payload - 1);
-
+      return state.filter((_, index) => index !== payload - 1);
     default:
       console.error("Unmatched case!");
   }
 }
 
-const Table = () => {
+const Table = ({ name, job }) => {
   const [workers, dispatch] = useReducer(reducer, []);
 
   useEffect(() => {
     (async () => {
       const workersData = await api.index();
+      // dispatch only needs to know the action details (an object)
       dispatch({ type: "init", payload: workersData });
     })();
   }, []);
+
+  useEffect(() => {
+    if (name) {
+      dispatch({ type: "create", payload: { name, job } });
+    }
+  }, [job, name]);
 
   function handleClick(event) {
     dispatch({
@@ -56,5 +65,9 @@ const Table = () => {
     </table>
   );
 };
+
+Table.propTypes = { name: PropTypes.string, job: PropTypes.string };
+
+Table.defaultProps = { name: "", job: "" };
 
 export default Table;

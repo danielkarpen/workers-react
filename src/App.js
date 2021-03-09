@@ -1,11 +1,7 @@
-import { Table } from "components";
+import { Main } from "components";
 
 function App() {
-  return (
-    <div>
-      <Table />
-    </div>
-  );
+  return <Main />;
 }
 
 export default App;
